@@ -8,7 +8,7 @@ A tiny macOS menu bar app that switches keyboard layouts the way Windows does: e
 
 - **⌃Space** selects the next layout and **⌃⇧Space** the previous one. You can choose ⌥Space or ⌘Space instead.
 - The result never depends on how fast you press or whether you let go of the modifier. Pressing, releasing and pressing again always moves forward.
-- The HUD never takes focus or blocks clicks. It fades out about 1 s after the last press and also appears over fullscreen apps and on every Space.
+- The HUD never takes focus or blocks clicks, and it also appears over fullscreen apps and on every Space. It stays visible while you hold any key of the hotkey (⌃, ⌥ or ⌘, Space, and ⇧ for the reverse hotkey) and fades out 1 s after you let go of all of them.
 - The menu bar shows the current layout's code (`EN`, `УК`, `РУ`…), even when you switch some other way.
 - No dependencies, no network access, no analytics, and no permissions to grant.
 

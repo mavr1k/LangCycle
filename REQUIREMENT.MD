@@ -53,7 +53,7 @@ The macOS input-source switcher is unsatisfactory:
 - **FR-12** Content: language **name** large (e.g. "Українська", "English", "Deutsch") plus short code (`EN`, `УК`) and, if available, the layout icon (`kTISPropertyIconImageURL`). A secondary row shows all layouts as a compact list with the active one highlighted (so the user sees the position in the cycle).
 - **FR-13** Size: card ≈ 320×180 pt minimum, primary text ≥ 48 pt. Size adjustable in menu: Small / Medium / Large.
 - **FR-14** Style: rounded rect (corner radius ~24), `NSVisualEffectView` material `.hudWindow`, light/dark aware.
-- **FR-15** Timing: appears instantly (≤ 50 ms after keypress), stays ~0.8 s after the **last** switch, fades out over 0.2 s. A new switch while visible updates content and resets the timer (no flicker, no stacked windows).
+- **FR-15** Timing: appears instantly (≤ 50 ms after keypress), stays visible while any key of the hotkey combination just used is held (its modifier, Space, and ⇧ for the reverse hotkey), hides 1 s after **all** of them are released, and fades out over 0.2 s. A new switch while visible updates content and restarts the wait (no flicker, no stacked windows).
 - **FR-16** Window behavior (critical):
   - `NSPanel`, styleMask `.borderless + .nonactivatingPanel`; `canBecomeKey/Main = false`; `ignoresMouseEvents = true`.
   - Level ≥ `.statusBar` (use `CGShadowingWindowLevel`-style high level if needed to cover fullscreen apps).
@@ -95,7 +95,7 @@ The macOS input-source switcher is unsatisfactory:
 3. ⌃⇧Space reverses the order.
 4. In a fullscreen app (e.g. Safari fullscreen) the HUD appears centered, does not exit fullscreen, and does not take focus (typing continues uninterrupted).
 5. Switching via the system menu bar input menu updates the menu bar code; the next ⌃Space continues from the new layout.
-6. HUD disappears ~1 s after the last press; rapid presses don't stack windows.
+6. The HUD stays while you hold the hotkey's modifier (or Space) and disappears ~1 s after you release all of them; rapid presses don't stack windows.
 7. Quit and relaunch: settings preserved; Launch at login works.
 8. App makes zero network connections (verify with Little Snitch / `nettop`).
 

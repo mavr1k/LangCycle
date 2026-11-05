@@ -71,7 +71,9 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         lastSelected = target
         lastSelectedTime = now
         statusItem.button?.title = layout.code
-        if defaults.bool(forKey: Key.showHUD) { hud.show(layout, in: layouts, size: hudSize) }
+        if defaults.bool(forKey: Key.showHUD) {
+            hud.show(layout, in: layouts, size: hudSize) { [weak self] in self?.hotkey.isHeld(forward: forward) ?? false }
+        }
     }
 
     /// Keeps the menu bar code right however the layout was changed (FR-18).

@@ -9,6 +9,7 @@ enum HotkeyPreset: Int, CaseIterable {
     fileprivate var carbonModifiers: UInt32 { UInt32([controlKey, optionKey, cmdKey][rawValue]) }
     /// Modifier mask as stored in com.apple.symbolichotkeys (NSEvent flag values).
     fileprivate var cocoaModifiers: Int { [1 << 18, 1 << 19, 1 << 20][rawValue] }
+    fileprivate var modifierFlag: NSEvent.ModifierFlags { [.control, .option, .command][rawValue] }
 }
 
 /// Carbon global hotkeys (FR-7): no Accessibility permission needed, and the key is consumed.
@@ -18,6 +19,7 @@ final class Hotkey {
     private(set) var registrationFailed = false
     private var refs: [EventHotKeyRef] = []
     private var down = Set<UInt32>()
+    private var preset = HotkeyPreset.control
 
     init() {
         let types = [EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed)),
@@ -42,7 +44,18 @@ final class Hotkey {
         onPress?(id == 1)
     }
 
+    /// True while any key of the combination that was just used is still down: its modifier (plus ⇧ for the
+    /// reverse hotkey) or Space. The HUD stays visible as long as this is true. Needs no permission:
+    /// modifiers come from `NSEvent.modifierFlags`, and Space counts only while Carbon has not reported its release.
+    func isHeld(forward: Bool) -> Bool {
+        let modifiers = forward ? preset.modifierFlag : preset.modifierFlag.union(.shift)
+        let spaceDown = down.contains(forward ? 1 : 2)
+            && CGEventSource.keyState(.combinedSessionState, key: CGKeyCode(kVK_Space))
+        return spaceDown || !NSEvent.modifierFlags.isDisjoint(with: modifiers)
+    }
+
     func register(_ preset: HotkeyPreset) {
+        self.preset = preset
         refs.forEach { UnregisterEventHotKey($0) }
         refs = []
         down = []

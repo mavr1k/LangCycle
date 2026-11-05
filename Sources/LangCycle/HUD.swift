@@ -1,4 +1,5 @@
 import AppKit
+import LangCycleCore
 
 enum HUDSize: Int, CaseIterable {
     case small, medium, large
@@ -26,8 +27,11 @@ final class HUD {
     private let subtitle = NSTextField(labelWithString: "")
     private let cycle = NSStackView()
     private var iconSize: [NSLayoutConstraint] = []
-    private var hideTimer: DispatchWorkItem?
     private var generation = 0
+    /// While the HUD is visible: checks whether the hotkey's keys are still down, and hides it 1 s after they are not.
+    private var tracker = HoldTracker(delay: 1)
+    private var isHeld: () -> Bool = { false }
+    private var poller: Timer?
 
     init() {
         panel.isOpaque = false
@@ -67,8 +71,9 @@ final class HUD {
                                      content.centerYAnchor.constraint(equalTo: background.centerYAnchor)])
     }
 
-    /// Shows `active` (with the whole cycle underneath) and restarts the hide timer.
-    func show(_ active: Layout, in layouts: [Layout], size: HUDSize) {
+    /// Shows `active` (with the whole cycle underneath). The HUD stays while `isHeld()` is true, i.e. while the user
+    /// holds a key of the hotkey, and fades out 1 s after the last one is released.
+    func show(_ active: Layout, in layouts: [Layout], size: HUDSize, isHeld: @escaping () -> Bool) {
         // Size the card for the widest/tallest layout in the cycle, so it does not resize between presses.
         var fit = NSSize.zero
         for layout in layouts + [active] {
@@ -88,11 +93,22 @@ final class HUD {
         generation += 1
         NSAnimationContext.runAnimationGroup { $0.duration = 0; panel.animator().alphaValue = 1 }  // cancels a fade
         panel.orderFrontRegardless()  // never makeKey / activate
-        hideTimer?.cancel()
-        let shown = generation
-        let timer = DispatchWorkItem { [weak self] in self?.fadeOut(shown) }
-        hideTimer = timer
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8, execute: timer)
+
+        self.isHeld = isHeld
+        tracker.reset()
+        if poller == nil {
+            // .common so it also runs while a menu is open. Only exists while the HUD is visible: idle CPU stays 0.
+            let timer = Timer(timeInterval: 0.05, repeats: true) { [weak self] _ in self?.poll() }
+            RunLoop.main.add(timer, forMode: .common)
+            poller = timer
+        }
+    }
+
+    private func poll() {
+        guard tracker.update(held: isHeld(), now: ProcessInfo.processInfo.systemUptime) else { return }
+        poller?.invalidate()
+        poller = nil
+        fadeOut(generation)
     }
 
     /// Fills the card's content for `active`, with the whole cycle underneath.
