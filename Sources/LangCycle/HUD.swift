@@ -42,7 +42,7 @@ final class HUD {
         panel.isReleasedWhenClosed = false
         panel.animationBehavior = .none
         panel.level = .statusBar
-        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary, .ignoresCycle]
+        panel.collectionBehavior = HUD.spaceBehavior
 
         let background = NSVisualEffectView()
         background.material = .hudWindow
@@ -92,7 +92,7 @@ final class HUD {
 
         generation += 1
         NSAnimationContext.runAnimationGroup { $0.duration = 0; panel.animator().alphaValue = 1 }  // cancels a fade
-        panel.orderFrontRegardless()  // never makeKey / activate
+        bringToActiveSpace()
 
         self.isHeld = isHeld
         tracker.reset()
@@ -103,6 +103,25 @@ final class HUD {
             poller = timer
         }
     }
+
+    /// Puts the panel on the Desktop (Space) that is showing now. A reused window with `.canJoinAllSpaces` is sometimes
+    /// left off a Space the system did not attach it to, and then a plain `orderFront` shows nothing there. So the
+    /// window is checked, and if it is not on this Space it is taken off screen and ordered in again, which makes
+    /// the window server place it afresh. Never makeKey / activate.
+    private func bringToActiveSpace() {
+        if panel.isVisible && !panel.isOnActiveSpace { panel.orderOut(nil) }
+        panel.collectionBehavior = HUD.spaceBehavior
+        panel.orderFrontRegardless()
+        // isOnActiveSpace is only reliable once the window server has handled the order-in, so look again shortly after.
+        let shown = generation
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+            guard let self, self.generation == shown, self.panel.isVisible, !self.panel.isOnActiveSpace else { return }
+            self.panel.orderOut(nil)
+            self.panel.orderFrontRegardless()
+        }
+    }
+
+    private static let spaceBehavior: NSWindow.CollectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary, .ignoresCycle]
 
     private func poll() {
         guard tracker.update(held: isHeld(), now: ProcessInfo.processInfo.systemUptime) else { return }
