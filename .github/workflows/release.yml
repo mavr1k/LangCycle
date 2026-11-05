@@ -26,7 +26,7 @@ jobs:
       # Without it the release is still created and the cask update is skipped with a notice.
       TAP_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # tags and history, for the release notes
 
@@ -46,7 +46,7 @@ jobs:
         run: ./release.sh
 
       - name: Keep the release files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-files
           path: |
@@ -67,7 +67,7 @@ jobs:
       # Only after the release exists, so the cask never points at a file that is not there yet.
       - name: Check out the Homebrew tap
         if: github.ref_type == 'tag' && env.TAP_TOKEN != ''
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: mavr1k/homebrew-tap
           token: ${{ secrets.TAP_GITHUB_TOKEN }}
