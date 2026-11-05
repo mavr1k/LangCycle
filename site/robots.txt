@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mavr1k.github.io/LangCycle/sitemap.xml

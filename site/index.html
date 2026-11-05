@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LangCycle: Switch Keyboard Layouts on Mac Like Windows</title>
+<meta name="description" content="Free macOS menu bar app: one hotkey cycles your keyboard layouts and input languages in a fixed order, like Windows. Big on-screen indicator, no permissions.">
+<meta name="theme-color" content="#0a64d8">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="keywords" content="switch keyboard layout mac, change input language mac, mac input source shortcut, ctrl space mac, windows style language switch mac, keyboard layout switcher macOS, menu bar app">
+<link rel="canonical" href="https://mavr1k.github.io/LangCycle/">
+<link rel="alternate" hreflang="en" href="https://mavr1k.github.io/LangCycle/">
+<link rel="alternate" hreflang="uk" href="https://mavr1k.github.io/LangCycle/uk/">
+<link rel="alternate" hreflang="x-default" href="https://mavr1k.github.io/LangCycle/">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="LangCycle">
+<meta property="og:title" content="LangCycle: Switch Keyboard Layouts on Mac Like Windows">
+<meta property="og:description" content="One hotkey cycles your keyboard layouts in a fixed order, and a big on-screen indicator shows the language you picked. Free and open source for macOS.">
+<meta property="og:url" content="https://mavr1k.github.io/LangCycle/">
+<meta property="og:image" content="https://mavr1k.github.io/LangCycle/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="LangCycle app icon next to the text: Switch keyboard layouts on Mac like Windows">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mavr1k.github.io/LangCycle/assets/og.png">
+<link rel="stylesheet" href="assets/style.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"WebSite","@id":"https://mavr1k.github.io/LangCycle/#website","url":"https://mavr1k.github.io/LangCycle/","name":"LangCycle","inLanguage":["en","uk"]},
+{"@type":"SoftwareApplication","@id":"https://mavr1k.github.io/LangCycle/#app","name":"LangCycle","description":"A macOS menu bar app that switches keyboard layouts in a fixed cycle with one hotkey and shows a large on-screen indicator.","applicationCategory":"UtilitiesApplication","operatingSystem":"macOS 13 or later","image":"https://mavr1k.github.io/LangCycle/assets/icon.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT","url":"https://mavr1k.github.io/LangCycle/","downloadUrl":"https://github.com/mavr1k/LangCycle/releases/latest","codeRepository":"https://github.com/mavr1k/LangCycle","featureList":["Cycle keyboard layouts in a fixed order with one hotkey","Large on-screen indicator that never takes focus","Current layout code in the menu bar","No permissions and no analytics"],"author":{"@type":"Person","name":"mavr1k","url":"https://github.com/mavr1k"}}
+]}
+</script>
+<script src="assets/app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="./"><img src="assets/icon.png" alt="" width="34" height="34">LangCycle</a>
+    <nav class="top" aria-label="Main">
+      <a class="hide-sm" href="#features">Features</a>
+      <a class="hide-sm" href="#why">Why</a>
+      <a class="hide-sm" href="#install">Install</a>
+      <a class="hide-sm" href="#faq">FAQ</a>
+      <a class="hide-sm" href="https://github.com/mavr1k/LangCycle">GitHub</a>
+      <span class="lang" role="group" aria-label="Language">
+        <a href="./" aria-current="true" hreflang="en" lang="en">EN</a>
+        <a href="uk/" hreflang="uk" lang="uk">УК</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" style="padding-bottom:0">
+    <div class="wrap">
+      <h1>Switch keyboard layouts on Mac the way <em>Windows</em> does.</h1>
+      <p class="lead">LangCycle is a free menu bar app for macOS. Every press of one hotkey moves to the next input language in a fixed order: A → B → C → A. A large indicator shows the language you picked.</p>
+      <div class="cta">
+        <a class="btn" data-download href="https://github.com/mavr1k/LangCycle/releases/latest">Download for macOS <span data-version></span></a>
+        <span class="code"><code id="brew">brew install --cask mavr1k/tap/langcycle</code><button type="button" data-copy="brew" data-copied="Copied">Copy</button></span>
+      </div>
+      <p class="meta">Free and open source · macOS 13 or later · Apple Silicon and Intel</p>
+
+      <div class="demo" role="img" aria-label="Pressing Control and Space switches the layout from English to Ukrainian to German. A large HUD shows the language name and the menu bar shows its code.">
+        <div class="menubar" aria-hidden="true">
+          <span class="code-slot"><span>EN</span><span>УК</span><span>DE</span></span>
+          <span>Wed 9:41</span>
+        </div>
+        <div class="hud" aria-hidden="true">
+          <div class="face"><span class="code">EN</span><b>English</b><small>ABC</small><div class="pills"><i>EN</i><i>УК</i><i>DE</i></div></div>
+          <div class="face"><span class="code">УК</span><b>Українська</b><small>Ukrainian</small><div class="pills"><i>EN</i><i>УК</i><i>DE</i></div></div>
+          <div class="face"><span class="code">DE</span><b>Deutsch</b><small>German</small><div class="pills"><i>EN</i><i>УК</i><i>DE</i></div></div>
+        </div>
+        <div class="keys" aria-hidden="true"><kbd>⌃</kbd><span>+</span><kbd class="space">Space</kbd></div>
+      </div>
+      <p class="demo-note">An illustration of the HUD. It fades one second after you let go of the keys.</p>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <h2>Predictable, quick, out of the way</h2>
+      <p class="sub">The result never depends on how fast you press or whether you release the modifier. Press, release, press again: always forward.</p>
+      <div class="grid three">
+        <div class="card"><div class="ico" aria-hidden="true">↻</div><h3>A fixed order</h3><p><strong>⌃Space</strong> selects the next layout, <strong>⌃⇧Space</strong> the previous one. Prefer ⌥Space or ⌘Space? Pick it in the menu.</p></div>
+        <div class="card"><div class="ico" aria-hidden="true">▢</div><h3>A HUD you can see</h3><p>A big card with the language name. It never takes focus or blocks clicks, and it shows over fullscreen apps and on every Space.</p></div>
+        <div class="card"><div class="ico" aria-hidden="true">EN</div><h3>Always in the menu bar</h3><p>The current layout's code (<code>EN</code>, <code>УК</code>, <code>DE</code>…) stays visible, even when you switch some other way.</p></div>
+        <div class="card"><div class="ico" aria-hidden="true">✎</div><h3>Your own labels</h3><p>Rename what the HUD shows for each layout, change its size, or turn it off and keep only the menu bar code.</p></div>
+        <div class="card"><div class="ico" aria-hidden="true">⇥</div><h3>Skip what you don't cycle</h3><p>Leave layouts out of the cycle while keeping them enabled in macOS. Adding or removing a layout takes effect at once.</p></div>
+        <div class="card"><div class="ico" aria-hidden="true">✓</div><h3>No permissions</h3><p>No Accessibility or Input Monitoring access, no dependencies, no analytics. Keystrokes are never logged.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="why">
+    <div class="wrap">
+      <h2>Why one key for every input language?</h2>
+      <p class="sub">If you type in two or more languages on a Mac, the built-in shortcut can feel wrong. LangCycle makes switching input sources predictable.</p>
+      <div class="compare">
+        <div class="card"><h3>The macOS shortcut</h3><p>The default input source shortcut jumps back to the layout you used before. With two languages that works. With three or more, you can't walk through them with one key, and you have to look at the menu bar to see where you landed.</p></div>
+        <div class="card hl"><h3>LangCycle</h3><p>The same key always moves forward through your layouts, the way Alt+Shift or Win+Space does on Windows. Add ⇧ to go back. The HUD names the language you picked, so you never type a line in the wrong one.</p></div>
+      </div>
+      <p class="callout">Good for people who write in English, Ukrainian, German, Polish, Spanish or any mix of languages and keyboard layouts, and for anyone moving from Windows to Mac.</p>
+    </div>
+  </section>
+
+  <section id="setup">
+    <div class="wrap">
+      <h2>One thing to do on first run</h2>
+      <p class="sub">macOS uses ⌃Space for its own input switcher and handles the key first. Turn that off once and LangCycle takes over.</p>
+      <ol class="steps">
+        <li><strong>Open the shortcut settings</strong><span>System Settings → Keyboard → Keyboard Shortcuts… → Input Sources.</span></li>
+        <li><strong>Untick the two input source shortcuts</strong><span>“Select the previous input source” and “Select next source in Input menu”.</span></li>
+        <li><strong>Using ⌘Space? One more</strong><span>Also untick Spotlight → “Show Spotlight search”.</span></li>
+      </ol>
+      <p class="callout">LangCycle shows these steps on first launch and later under <strong>Setup Help…</strong> in its menu. If a shortcut still conflicts, the menu says <code>⚠︎ Shortcut unavailable</code>.</p>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="wrap">
+      <h2>Install</h2>
+      <p class="sub">LangCycle is not notarized by Apple (that needs a paid Apple Developer account); it is only ad-hoc signed. So macOS treats a downloaded copy as coming from an unidentified developer. Both ways below deal with that.</p>
+      <div class="install">
+        <div class="card">
+          <h3>Homebrew</h3>
+          <span class="code"><code id="brew2">brew install --cask mavr1k/tap/langcycle</code><button type="button" data-copy="brew2" data-copied="Copied">Copy</button></span>
+          <p style="margin-top:12px">The cask removes the download quarantine flag, so macOS shows no warning. Update later with <code>brew upgrade --cask langcycle</code>.</p>
+        </div>
+        <div class="card">
+          <h3>Download</h3>
+          <ol>
+            <li>Get <a data-download href="https://github.com/mavr1k/LangCycle/releases/latest">the latest zip</a> <span data-version></span> and unzip it.</li>
+            <li>Drag <code>LangCycle.app</code> into <code>/Applications</code>.</li>
+            <li>Open it. When macOS refuses, click <strong>Done</strong>, then go to System Settings → Privacy &amp; Security and click <strong>Open Anyway</strong>. You only do this once.</li>
+          </ol>
+        </div>
+      </div>
+      <p class="callout">Prefer to build it yourself? Clone the repository and run <code>./build.sh</code>. Only Apple's Command Line Tools are needed, not Xcode. <a href="https://github.com/mavr1k/LangCycle#build-from-source">Build instructions</a>.</p>
+    </div>
+  </section>
+
+  <section id="privacy">
+    <div class="wrap">
+      <h2>Private by design</h2>
+      <p class="sub">There's very little to trust, and you can check all of it: the code is open and short.</p>
+      <div class="grid">
+        <div class="card"><h3>Only the hotkey reaches it</h3><p>It uses Carbon's <code>RegisterEventHotKey</code>, which needs no special access. Nothing you type is read or logged.</p></div>
+        <div class="card"><h3>Updates only when you say so</h3><p>It checks GitHub for a new release about once a day and downloads nothing until you choose to install. Installs are checked against GitHub's SHA-256 fingerprint and the app's signature. Untick <em>Check for Updates Automatically</em> and the app makes no network connections at all.</p></div>
+      </div>
+      <p class="callout">This website has no analytics and no third-party scripts or fonts. Its only request is to GitHub's public API, to show the current version on the download button.</p>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <h2>Questions about switching layouts on Mac</h2>
+      <details><summary>How do I switch keyboard language on a Mac with one shortcut?</summary><p>Install LangCycle, turn off the macOS input source shortcuts once, then press <strong>⌃Space</strong>. Each press selects the next enabled layout. <strong>⌃⇧Space</strong> goes to the previous one.</p></details>
+      <details><summary>Is there a Windows-style language switcher for Mac?</summary><p>Yes, that is what LangCycle does: one hotkey cycles through your keyboard layouts in a fixed order, instead of jumping between the last two.</p></details>
+      <details><summary>Is LangCycle free?</summary><p>Yes. It is open source under the MIT license, with no ads, no accounts and no analytics.</p></details>
+      <details><summary>Why does macOS say it can't verify LangCycle?</summary><p>The app is not notarized, because notarization needs a paid Apple Developer account. Install with Homebrew, or use <strong>Open Anyway</strong> in System Settings → Privacy &amp; Security once. The source is public and releases are built by GitHub Actions.</p></details>
+      <details><summary>Does it work with ⌘Space or ⌥Space?</summary><p>Yes. Choose the hotkey in the menu. With ⌘Space, also turn off Spotlight's shortcut. Adding ⇧ always goes backwards.</p></details>
+      <details><summary>Which Macs are supported?</summary><p>macOS 13 or later, on Apple Silicon and Intel. The app is a universal build.</p></details>
+      <details><summary>Does it work while a password field is focused?</summary><p>Carbon hotkeys usually keep working while secure input is on, but this has not been verified for the current build yet.</p></details>
+      <details><summary>How do I uninstall it?</summary><p>Turn off <strong>Launch at Login</strong> and quit LangCycle, then delete the app. With Homebrew run <code>brew uninstall --cask --zap langcycle</code>, which also removes the saved settings. Re-enable macOS's own shortcut in Keyboard Shortcuts if you want it back.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span>© LangCycle · MIT License · Made by <a href="https://github.com/mavr1k">mavr1k</a></span>
+    <nav aria-label="Footer">
+      <a href="https://github.com/mavr1k/LangCycle">GitHub</a>
+      <a href="https://github.com/mavr1k/LangCycle/releases">Releases</a>
+      <a href="https://github.com/mavr1k/LangCycle/blob/main/LICENSE">License</a>
+      <a href="https://www.linkedin.com/in/mavrosaus/">LinkedIn</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

@@ -8,6 +8,10 @@
   <a href="https://github.com/mavr1k/LangCycle/actions/workflows/ci.yml"><img src="https://github.com/mavr1k/LangCycle/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
 </p>
 
+<p align="center">
+  <a href="https://mavr1k.github.io/LangCycle/">Website</a> · <a href="https://mavr1k.github.io/LangCycle/uk/">Українською</a>
+</p>
+
 A tiny macOS menu bar app that switches keyboard layouts the way Windows does: every press of the hotkey moves to the **next layout in a fixed order** (A → B → C → A). It then shows a **large HUD** with the language you picked, so you can see it at a glance.
 
 - **⌃Space** selects the next layout and **⌃⇧Space** the previous one. You can choose ⌥Space or ⌘Space instead.
@@ -137,6 +141,7 @@ Sources/LangCycle/About.swift         the text of the About window
 Sources/LangCycle/Updater.swift       update check, schedule, install dialog, relaunch
 Tests/LangCycleCoreTests/             unit tests (Swift Testing)
 Resources/Info.plist                  LSUIElement agent app, bundle id com.local.langcycle
+site/                                 the landing page (plain HTML/CSS, English and Ukrainian), published by .github/workflows/pages.yml
 ```
 
 ## Uninstall

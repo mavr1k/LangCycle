@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LangCycle: перемикання розкладок клавіатури на Mac, як у Windows</title>
+<meta name="description" content="Безкоштовна програма для рядка меню macOS: одна гаряча клавіша перемикає розкладки клавіатури по колу, як у Windows. Великий індикатор, без дозволів.">
+<meta name="theme-color" content="#0a64d8">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="keywords" content="перемикання розкладки mac, змінити мову введення mac, ctrl space mac, перемикач розкладки як у windows, розкладка клавіатури macOS">
+<link rel="canonical" href="https://mavr1k.github.io/LangCycle/uk/">
+<link rel="alternate" hreflang="en" href="https://mavr1k.github.io/LangCycle/">
+<link rel="alternate" hreflang="uk" href="https://mavr1k.github.io/LangCycle/uk/">
+<link rel="alternate" hreflang="x-default" href="https://mavr1k.github.io/LangCycle/">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="uk_UA">
+<meta property="og:site_name" content="LangCycle">
+<meta property="og:title" content="LangCycle: перемикання розкладок клавіатури на Mac, як у Windows">
+<meta property="og:description" content="Одна гаряча клавіша перебирає розкладки клавіатури по колу, а великий індикатор показує обрану мову. Безкоштовно, з відкритим кодом, для macOS.">
+<meta property="og:url" content="https://mavr1k.github.io/LangCycle/uk/">
+<meta property="og:image" content="https://mavr1k.github.io/LangCycle/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Іконка LangCycle і напис: перемикання розкладок клавіатури на Mac, як у Windows">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mavr1k.github.io/LangCycle/assets/og.png">
+<link rel="stylesheet" href="../assets/style.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"WebSite","@id":"https://mavr1k.github.io/LangCycle/#website","url":"https://mavr1k.github.io/LangCycle/","name":"LangCycle","inLanguage":["en","uk"]},
+{"@type":"SoftwareApplication","@id":"https://mavr1k.github.io/LangCycle/uk/#app","name":"LangCycle","inLanguage":"uk","description":"Програма для рядка меню macOS, яка перемикає розкладки клавіатури по колу однією гарячою клавішею і показує великий індикатор.","applicationCategory":"UtilitiesApplication","operatingSystem":"macOS 13 or later","image":"https://mavr1k.github.io/LangCycle/assets/icon.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT","url":"https://mavr1k.github.io/LangCycle/uk/","downloadUrl":"https://github.com/mavr1k/LangCycle/releases/latest","codeRepository":"https://github.com/mavr1k/LangCycle","author":{"@type":"Person","name":"mavr1k","url":"https://github.com/mavr1k"}}
+]}
+</script>
+<script src="../assets/app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Перейти до вмісту</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="./"><img src="../assets/icon.png" alt="" width="34" height="34">LangCycle</a>
+    <nav class="top" aria-label="Головне меню">
+      <a class="hide-sm" href="#features">Можливості</a>
+      <a class="hide-sm" href="#why">Навіщо</a>
+      <a class="hide-sm" href="#install">Встановлення</a>
+      <a class="hide-sm" href="#faq">Питання</a>
+      <a class="hide-sm" href="https://github.com/mavr1k/LangCycle">GitHub</a>
+      <span class="lang" role="group" aria-label="Мова">
+        <a href="../" hreflang="en" lang="en">EN</a>
+        <a href="./" aria-current="true" hreflang="uk" lang="uk">УК</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" style="padding-bottom:0">
+    <div class="wrap">
+      <h1>Перемикайте розкладки клавіатури на Mac, як у <em>Windows</em>.</h1>
+      <p class="lead">LangCycle — безкоштовна програма для рядка меню macOS. Кожне натискання однієї гарячої клавіші вмикає наступну мову введення за фіксованим порядком: A → B → C → A. Великий індикатор показує обрану мову.</p>
+      <div class="cta">
+        <a class="btn" data-download href="https://github.com/mavr1k/LangCycle/releases/latest">Завантажити для macOS <span data-version></span></a>
+        <span class="code"><code id="brew">brew install --cask mavr1k/tap/langcycle</code><button type="button" data-copy="brew" data-copied="Скопійовано">Копіювати</button></span>
+      </div>
+      <p class="meta">Безкоштовно, з відкритим кодом · macOS 13 або новіша · Apple Silicon та Intel</p>
+
+      <div class="demo" role="img" aria-label="Натискання Control і Пробіл перемикає розкладку з англійської на українську, а потім на німецьку. Великий індикатор показує назву мови, а рядок меню — її код.">
+        <div class="menubar" aria-hidden="true">
+          <span class="code-slot"><span>EN</span><span>УК</span><span>DE</span></span>
+          <span>Ср 9:41</span>
+        </div>
+        <div class="hud" aria-hidden="true">
+          <div class="face"><span class="code">EN</span><b>English</b><small>ABC</small><div class="pills"><i>EN</i><i>УК</i><i>DE</i></div></div>
+          <div class="face"><span class="code">УК</span><b>Українська</b><small>Ukrainian</small><div class="pills"><i>EN</i><i>УК</i><i>DE</i></div></div>
+          <div class="face"><span class="code">DE</span><b>Deutsch</b><small>German</small><div class="pills"><i>EN</i><i>УК</i><i>DE</i></div></div>
+        </div>
+        <div class="keys" aria-hidden="true"><kbd>⌃</kbd><span>+</span><kbd class="space">Space</kbd></div>
+      </div>
+      <p class="demo-note">Ілюстрація індикатора. Він зникає через секунду після того, як ви відпустите клавіші.</p>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <h2>Передбачувано, швидко, без зайвого</h2>
+      <p class="sub">Результат не залежить від того, наскільки швидко ви натискаєте і чи відпускаєте модифікатор. Натиснули, відпустили, натиснули знову — завжди вперед.</p>
+      <div class="grid three">
+        <div class="card"><div class="ico" aria-hidden="true">↻</div><h3>Фіксований порядок</h3><p><strong>⌃Space</strong> вмикає наступну розкладку, <strong>⌃⇧Space</strong> — попередню. Вам зручніше ⌥Space чи ⌘Space? Оберіть у меню.</p></div>
+        <div class="card"><div class="ico" aria-hidden="true">▢</div><h3>Індикатор, який видно</h3><p>Велика картка з назвою мови. Вона не забирає фокус і не блокує кліки, а також з'являється поверх повноекранних програм і на кожному просторі.</p></div>
+        <div class="card"><div class="ico" aria-hidden="true">EN</div><h3>Завжди в рядку меню</h3><p>Код поточної розкладки (<code>EN</code>, <code>УК</code>, <code>DE</code>…) завжди на виду, навіть якщо ви перемкнули її іншим способом.</p></div>
+        <div class="card"><div class="ico" aria-hidden="true">✎</div><h3>Власні назви</h3><p>Змінюйте напис, який індикатор показує для кожної розкладки, налаштовуйте його розмір або вимкніть і залиште лише код у рядку меню.</p></div>
+        <div class="card"><div class="ico" aria-hidden="true">⇥</div><h3>Пропускайте зайве</h3><p>Виключайте розкладки з циклу, залишаючи їх увімкненими в macOS. Додавання чи видалення розкладки діє одразу.</p></div>
+        <div class="card"><div class="ico" aria-hidden="true">✓</div><h3>Без дозволів</h3><p>Жодного доступу до Універсального доступу чи Моніторингу введення, жодних залежностей і аналітики. Натискання клавіш ніколи не записуються.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="why">
+    <div class="wrap">
+      <h2>Навіщо одна клавіша для всіх мов введення?</h2>
+      <p class="sub">Якщо ви друкуєте двома чи більше мовами на Mac, вбудоване скорочення може заважати. LangCycle робить перемикання джерел введення передбачуваним.</p>
+      <div class="compare">
+        <div class="card"><h3>Скорочення macOS</h3><p>Стандартне скорочення джерела введення повертає до розкладки, яку ви використовували перед цим. З двома мовами це працює. З трьома і більше пройти їх по колу однією клавішею неможливо, а щоб побачити, де ви опинилися, доводиться дивитися на рядок меню.</p></div>
+        <div class="card hl"><h3>LangCycle</h3><p>Одна й та сама клавіша завжди веде вперед по вашому списку розкладок, як Alt+Shift чи Win+Space у Windows. Додайте ⇧, щоб піти назад. Індикатор називає обрану мову, тож ви не надрукуєте рядок не тією.</p></div>
+      </div>
+      <p class="callout">Підійде тим, хто пише українською, англійською, німецькою, польською чи будь-яким поєднанням мов і розкладок, а також усім, хто переходить із Windows на Mac.</p>
+    </div>
+  </section>
+
+  <section id="setup">
+    <div class="wrap">
+      <h2>Одне налаштування під час першого запуску</h2>
+      <p class="sub">macOS використовує ⌃Space для власного перемикача джерел введення і обробляє цю клавішу першою. Вимкніть це один раз — і LangCycle візьме керування на себе.</p>
+      <ol class="steps">
+        <li><strong>Відкрийте налаштування скорочень</strong><span>Системні параметри → Клавіатура → Комбінації клавіш… → Джерела введення.</span></li>
+        <li><strong>Зніміть позначки з двох скорочень джерел введення</strong><span>«Вибрати попереднє джерело введення» і «Вибрати наступне джерело в меню введення».</span></li>
+        <li><strong>Обрали ⌘Space? Є ще один крок</strong><span>Також зніміть позначку Spotlight → «Показати пошук Spotlight».</span></li>
+      </ol>
+      <p class="callout">LangCycle показує ці кроки під час першого запуску, а пізніше — у пункті меню <strong>Setup Help…</strong>. Якщо скорочення все ще конфліктує, меню покаже <code>⚠︎ Shortcut unavailable</code>. Назви пунктів у macOS можуть відрізнятися залежно від мови системи.</p>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="wrap">
+      <h2>Встановлення</h2>
+      <p class="sub">Apple не нотаріально засвідчила LangCycle (для цього потрібен платний обліковий запис Apple Developer), програма лише підписана ad-hoc. Тому macOS сприймає завантажену копію як програму від невідомого розробника. Обидва способи нижче це враховують.</p>
+      <div class="install">
+        <div class="card">
+          <h3>Homebrew</h3>
+          <span class="code"><code id="brew2">brew install --cask mavr1k/tap/langcycle</code><button type="button" data-copy="brew2" data-copied="Скопійовано">Копіювати</button></span>
+          <p style="margin-top:12px">Cask знімає з програми позначку карантину, тож macOS не показує попередження. Оновлюйте командою <code>brew upgrade --cask langcycle</code>.</p>
+        </div>
+        <div class="card">
+          <h3>Завантаження</h3>
+          <ol>
+            <li>Завантажте <a data-download href="https://github.com/mavr1k/LangCycle/releases/latest">останній zip</a> <span data-version></span> і розпакуйте його.</li>
+            <li>Перетягніть <code>LangCycle.app</code> у <code>/Applications</code>.</li>
+            <li>Відкрийте програму. Коли macOS відмовить, натисніть <strong>Готово</strong>, потім відкрийте Системні параметри → Приватність і безпека та натисніть <strong>Усе одно відкрити</strong>. Це потрібно зробити лише раз.</li>
+          </ol>
+        </div>
+      </div>
+      <p class="callout">Хочете зібрати самі? Клонуйте репозиторій і виконайте <code>./build.sh</code>. Потрібні лише Command Line Tools від Apple, Xcode не потрібен. <a href="https://github.com/mavr1k/LangCycle#build-from-source">Інструкція зі збирання</a> (англійською).</p>
+    </div>
+  </section>
+
+  <section id="privacy">
+    <div class="wrap">
+      <h2>Приватність за задумом</h2>
+      <p class="sub">Тут майже нічого не потрібно брати на віру, і все можна перевірити: код відкритий і короткий.</p>
+      <div class="grid">
+        <div class="card"><h3>Лише гаряча клавіша</h3><p>Програма використовує <code>RegisterEventHotKey</code> з Carbon, якому не потрібен особливий доступ. Те, що ви друкуєте, не читається і не записується.</p></div>
+        <div class="card"><h3>Оновлення лише за вашою згодою</h3><p>Приблизно раз на день програма перевіряє GitHub на наявність нового релізу і нічого не завантажує, доки ви не оберете встановлення. Перед встановленням перевіряються SHA-256 від GitHub і підпис програми. Зніміть позначку <em>Check for Updates Automatically</em> — і програма взагалі не виходитиме в мережу.</p></div>
+      </div>
+      <p class="callout">На цьому сайті немає ні аналітики, ні сторонніх скриптів чи шрифтів. Єдиний запит — до публічного API GitHub, щоб показати поточну версію на кнопці завантаження.</p>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <h2>Питання про перемикання розкладок на Mac</h2>
+      <details><summary>Як перемикати мову клавіатури на Mac однією комбінацією?</summary><p>Встановіть LangCycle, один раз вимкніть системні скорочення джерел введення і натискайте <strong>⌃Space</strong>. Кожне натискання вмикає наступну розкладку зі списку. <strong>⌃⇧Space</strong> повертає до попередньої.</p></details>
+      <details><summary>Чи є для Mac перемикач розкладок, як у Windows?</summary><p>Так, саме це робить LangCycle: одна гаряча клавіша перебирає ваші розкладки по колу у фіксованому порядку, а не стрибає між двома останніми.</p></details>
+      <details><summary>Чи безкоштовний LangCycle?</summary><p>Так. Це програма з відкритим кодом під ліцензією MIT, без реклами, облікових записів і аналітики.</p></details>
+      <details><summary>Чому macOS каже, що не може перевірити LangCycle?</summary><p>Програма не нотаріально засвідчена, бо для цього потрібен платний обліковий запис Apple Developer. Встановіть через Homebrew або один раз скористайтеся кнопкою <strong>Усе одно відкрити</strong> у Системні параметри → Приватність і безпека. Вихідний код відкритий, а релізи збирає GitHub Actions.</p></details>
+      <details><summary>Чи працює це з ⌘Space або ⌥Space?</summary><p>Так. Оберіть гарячу клавішу в меню. Для ⌘Space також вимкніть скорочення Spotlight. Додавання ⇧ завжди перемикає назад.</p></details>
+      <details><summary>Які Mac підтримуються?</summary><p>macOS 13 або новіша, на Apple Silicon та Intel. Програма універсальна.</p></details>
+      <details><summary>Чи працює це в полі для пароля?</summary><p>Гарячі клавіші Carbon зазвичай працюють і за ввімкненого безпечного введення, але для поточної збірки це ще не перевірено.</p></details>
+      <details><summary>Як видалити програму?</summary><p>Вимкніть <strong>Launch at Login</strong> і вийдіть із LangCycle, потім видаліть програму. З Homebrew виконайте <code>brew uninstall --cask --zap langcycle</code> — це також видалить збережені налаштування. Якщо хочете повернути системне скорочення, увімкніть його знову в налаштуваннях клавіатури.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span>© LangCycle · Ліцензія MIT · Автор: <a href="https://github.com/mavr1k">mavr1k</a></span>
+    <nav aria-label="Нижнє меню">
+      <a href="https://github.com/mavr1k/LangCycle">GitHub</a>
+      <a href="https://github.com/mavr1k/LangCycle/releases">Релізи</a>
+      <a href="https://github.com/mavr1k/LangCycle/blob/main/LICENSE">Ліцензія</a>
+      <a href="https://www.linkedin.com/in/mavrosaus/">LinkedIn</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>
