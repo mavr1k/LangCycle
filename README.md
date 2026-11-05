@@ -14,7 +14,7 @@ A tiny macOS menu bar app that switches keyboard layouts the way Windows does: e
 - The result never depends on how fast you press or whether you let go of the modifier. Pressing, releasing and pressing again always moves forward.
 - The HUD never takes focus or blocks clicks, and it also appears over fullscreen apps and on every Space. It stays visible while you hold any key of the hotkey (⌃, ⌥ or ⌘, Space, and ⇧ for the reverse hotkey) and fades out 1 s after you let go of all of them.
 - The menu bar shows the current layout's code (`EN`, `УК`, `DE`…), even when you switch some other way.
-- No dependencies, no network access, no analytics, and no permissions to grant.
+- No dependencies, no analytics, and no permissions to grant. The only network access is the update check (see [Updates](#updates)), which you can turn off.
 
 ## Requirements
 
@@ -76,6 +76,9 @@ LangCycle shows these steps on first launch, and later under **Setup Help…** i
 | Skip Layouts | Leave layouts out of the cycle while keeping them enabled in macOS. |
 | HUD Labels | Rename the big name the HUD shows for a layout (see below). |
 | Launch at Login | Uses `SMAppService`. macOS may ask you to approve it in System Settings → General → Login Items. |
+| Update Available… | Shown at the top (and a ↑ after the menu bar code) when a newer version exists. Install and Restart… updates the app. |
+| Check for Updates Automatically | On by default. Checks about once a day; turn it off for no network access at all. |
+| Check for Updates Now | Looks right away and tells you what it found. |
 | Setup Help… | The steps for turning off the macOS shortcut. |
 | About LangCycle | Version, author and a short bio. The text is in `Sources/LangCycle/About.swift`. |
 
@@ -99,22 +102,39 @@ Right after LangCycle selects a layout, macOS can still report the old one for a
 
 This logic is a pure function, `nextLayout(...)` in `Sources/LangCycleCore/Cycle.swift`, and is covered by the unit tests.
 
+## Updates
+
+LangCycle can update itself, but only when you say so.
+
+- **Checking:** shortly after it starts, and then at most once a day, the app asks GitHub for the latest release of this project (`https://api.github.com/repos/mavr1k/LangCycle/releases/latest`). If a newer version exists, the menu shows **Update Available: X.Y.Z — Install and Restart…** at the top and a ↑ appears after the layout code in the menu bar. Automatic checks never open a window, and nothing is downloaded until you choose to install.
+- **What is sent:** an ordinary HTTPS request, with `User-Agent: LangCycle/<version>`, and GitHub sees your IP address as for any web request. No identifiers and no usage data.
+- **Installing:** the app downloads the release zip from this project's GitHub releases, checks it against the SHA-256 fingerprint GitHub publishes for it, unpacks it, and requires exactly one `LangCycle.app` with the same bundle identifier, the announced version and a valid code signature. Only then does it replace itself and restart. If anything fails, your current app is left as it was and you are told why. It never installs an older or equal version, a draft or a pre-release.
+- **Where it works:** the app must sit in a folder you can write to, such as `/Applications`. A copy run from a build folder or straight from a quarantined download offers the release page instead.
+- **Turn it off:** untick **Check for Updates Automatically**. **Check for Updates Now** still works when you ask. With the option off and no manual check, the app makes no network connections.
+- **Limit:** the fingerprint comes from the same GitHub release as the zip, so it catches a corrupted or swapped download but not someone who controls the GitHub repository. Signing releases with a separate key could be added later.
+- **Homebrew:** `brew upgrade --cask langcycle` still works. After an in-app update, `brew` may list the cask as outdated until you run it, which just reinstalls the same version.
+- **After an update**, macOS may ask you to approve **Launch at Login** again, because each build has a new ad-hoc signature.
+
 ## Permissions and privacy
 
 - **No permissions are needed.** The hotkey uses Carbon's `RegisterEventHotKey`, which does not need Accessibility or Input Monitoring access and keeps the key from reaching the app you are typing in.
 - **Keystrokes:** only the registered hotkey reaches the app. Nothing is logged.
-- **Network:** the app contains no network code. You can confirm with `lsof -i -a -p $(pgrep -x LangCycle)` or `nettop`.
+- **Network:** only the update check and, when you install an update, the download (see [Updates](#updates)). Nothing else, and no analytics. With **Check for Updates Automatically** off, the app makes no connections; you can confirm with `lsof -i -a -p $(pgrep -x LangCycle)` or `nettop`.
 - **Secure input** (password fields, Terminal → Secure Keyboard Entry): Carbon hotkeys usually keep working while secure input is on. **This has not been verified for this build yet.** To check, turn on Terminal → Secure Keyboard Entry, focus Terminal and press the hotkey.
 
 ## Project layout
 
 ```
 Sources/LangCycleCore/Cycle.swift     pure logic: next/previous layout, short codes, native language names
+Sources/LangCycleCore/HoldTracker.swift  when the HUD hides after the hotkey is released
+Sources/LangCycleCore/Update.swift    versions, reading GitHub's release answer, the check schedule, SHA-256
+Sources/LangCycleCore/AppInstaller.swift  verifies a downloaded zip and swaps it in for the running app
 Sources/LangCycle/main.swift          app delegate, menu bar item and menu, settings, single instance
 Sources/LangCycle/Hotkey.swift        Carbon hotkeys, presets, detection of conflicting macOS shortcuts
 Sources/LangCycle/InputSources.swift  thin wrapper over Text Input Sources (TIS)
 Sources/LangCycle/HUD.swift           the indicator panel
 Sources/LangCycle/About.swift         the text of the About window
+Sources/LangCycle/Updater.swift       update check, schedule, install dialog, relaunch
 Tests/LangCycleCoreTests/             unit tests (Swift Testing)
 Resources/Info.plist                  LSUIElement agent app, bundle id com.local.langcycle
 ```

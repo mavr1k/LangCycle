@@ -16,13 +16,14 @@ The macOS input-source switcher is unsatisfactory:
 3. The HUD must be **non-intrusive**: never steals focus, never blocks clicks, fades out quickly, and also appears over fullscreen apps.
 4. Small, dependency-free, local-build, fully open source.
 
-## 3. Non-goals (v1)
+## 3. Non-goals (for now)
 
 - No text correction/transliteration (that is what AURA Switcher does).
 - No per-app language memory.
 - No Windows/Linux support.
 - No support for CJK input methods that use candidate windows (plain keyboard layouts only; they may work but are untested).
-- No network access, analytics, or auto-update.
+- No analytics or telemetry for now. This may change later: if analytics are ever added they must be opt-in, described in NFR-3 and the README before they ship, and kept separate from the update check (5.6).
+- Network access is limited to the update check and the update download (5.6). Nothing else talks to the network.
 
 ## 4. Target platform
 
@@ -71,13 +72,20 @@ The macOS input-source switcher is unsatisfactory:
 - **FR-21** Single instance (second launch quits immediately).
 - **FR-22** Settings persisted in `UserDefaults` (suite `com.local.langcycle`).
 
+### 5.6 Updates
+- **FR-23** Update check: shortly after launch and then at most once every 24 h, the app asks GitHub for the latest stable release of this project (`GET https://api.github.com/repos/mavr1k/LangCycle/releases/latest`). The menu has **Check for Updates Automatically** (on by default, can be turned off) and **Check for Updates Now** (always available).
+- **FR-24** Ask first: when a newer version exists, the menu shows **Update Available: X.Y.Z — Install and Restart…** at the top and the menu bar title gets a ↑ marker. Automatic checks never open windows, and nothing is downloaded or changed until the user chooses to install.
+- **FR-25** Install: the app downloads the release zip over https from this project's GitHub releases, checks its SHA-256 against the digest GitHub publishes for the asset, unpacks it, and requires exactly one `LangCycle.app` with the same bundle identifier, the announced version and a valid code signature. Only then does it replace the running app (atomic swap) and relaunch. If any step fails, the current app is left untouched and the user is told why, with a link to the release page.
+- **FR-26** Safety limits: it never installs a version that is not newer than the running one, never installs drafts or pre-releases, and never downloads from anywhere except `github.com/mavr1k/LangCycle/releases/download/…`. If the app cannot replace itself (not in a writable `.app`, e.g. run from a build folder or from a quarantined download), it offers the release page instead.
+- **FR-27** Privacy: a check sends only the standard HTTPS request (`User-Agent: LangCycle/<version>`) and the IP address GitHub sees. No identifiers, no usage data. Failed automatic checks are silent; failures of a check the user started are reported.
+- **Known limit:** the digest comes from the same GitHub release as the zip, so this protects against corrupted or swapped downloads but not against someone who controls the GitHub repository. Signing releases with a separate key could be added later.
+
 ## 6. Non-functional requirements
 
 - **NFR-1 Latency:** layout actually changes ≤ 30 ms after keydown; HUD visible ≤ 50 ms.
 - **NFR-2 Resources:** idle CPU ~0%, memory < 40 MB.
-- **NFR-3 Privacy/Security:** no network code, no logging of keystrokes, no keystroke monitoring beyond the registered hotkey. Code is open source (MIT or GPL-3.0 — choose in repo).
+- **NFR-3 Privacy/Security:** the only network access is the update check and download (5.6); no analytics or telemetry for now (if added later: opt-in and documented first); no logging of keystrokes, no keystroke monitoring beyond the registered hotkey. Code is open source (MIT or GPL-3.0 — choose in repo).
 - **NFR-4 Robustness:** never freezes input; if the hotkey can't be registered, the app still runs and tells the user why.
-- **NFR-5 Size:** target ≤ ~400 lines of Swift in total, in a few files (`main.swift`, `Hotkey.swift`, `InputSources.swift`, `HUD.swift`).
 
 ## 7. Edge cases to handle
 
@@ -97,12 +105,14 @@ The macOS input-source switcher is unsatisfactory:
 5. Switching via the system menu bar input menu updates the menu bar code; the next ⌃Space continues from the new layout.
 6. The HUD stays while you hold the hotkey's modifier (or Space) and disappears ~1 s after you release all of them; rapid presses don't stack windows.
 7. Quit and relaunch: settings preserved; Launch at login works.
-8. App makes zero network connections (verify with Little Snitch / `nettop`).
+8. With **Check for Updates Automatically** off and no manual check, the app makes zero network connections (verify with Little Snitch / `nettop`). With it on, the only connection is to `api.github.com`, plus `github.com` while an update is being installed.
+9. With a newer release published: the menu shows the update item and the ↑ marker without any window popping up; **Install and Restart…** downloads, replaces the app and relaunches the new version; the settings are kept. With the newest version installed, **Check for Updates Now** says it is up to date. With the network off, a manual check reports the problem and an automatic one stays silent.
 
 ## 9. Deliverables
 
 - Source in a git repo: `Sources/`, `build.sh`, `README.md` (build, permissions, disabling the system shortcut, uninstall), `LICENSE`.
 - Unit tests for the next/previous selection logic (pure function: `(layouts, lastSelected, lastSelectedTime, current, now) -> target`), covering FR-4.
+- Unit tests for the update logic: version comparison, release parsing and validation, the check schedule, and the installer (wrong fingerprint, wrong app, wrong version, successful replace).
 - `build.sh` produces a universal `LangCycle.app` and installs to `/Applications`.
 
 ## 10. Suggested implementation notes for Claude Code

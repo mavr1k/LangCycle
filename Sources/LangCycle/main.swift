@@ -15,6 +15,8 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let hotkey = Hotkey()
     private let hud = HUD()
+    private let updater = Updater()
+    private var layoutCode = "⌨︎"
     private var lastSelected: String?
     private var lastSelectedTime: TimeInterval?
 
@@ -50,6 +52,9 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         updateStatusItem()
 
+        updater.onChange = { [weak self] in self?.refreshStatusTitle() }
+        updater.start()
+
         if !defaults.bool(forKey: Key.didShowHelp) {
             defaults.set(true, forKey: Key.didShowHelp)
             DispatchQueue.main.async { self.showHelp() }
@@ -70,7 +75,7 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if target != current { InputSources.select(layout) }
         lastSelected = target
         lastSelectedTime = now
-        statusItem.button?.title = layout.code
+        showCode(layout.code)
         if defaults.bool(forKey: Key.showHUD) {
             hud.show(layout, in: layouts, size: hudSize) { [weak self] in self?.hotkey.isHeld(forward: forward) ?? false }
         }
@@ -79,7 +84,17 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
     /// Keeps the menu bar code right however the layout was changed (FR-18).
     @objc private func updateStatusItem() {
         let current = InputSources.currentID()
-        statusItem.button?.title = InputSources.enabled().first { $0.id == current }?.code ?? "⌨︎"
+        showCode(InputSources.enabled().first { $0.id == current }?.code ?? "⌨︎")
+    }
+
+    private func showCode(_ code: String) {
+        layoutCode = code
+        refreshStatusTitle()
+    }
+
+    /// The layout code, with a ↑ after it while a newer version is waiting to be installed.
+    private func refreshStatusTitle() {
+        statusItem.button?.title = layoutCode + (updater.available != nil ? " ↑" : "")
     }
 
     // MARK: Menu (rebuilt every time it opens, so it is always current)
@@ -88,6 +103,13 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.removeAllItems()
         let layouts = InputSources.enabled()
         let current = InputSources.currentID()
+        if updater.activity == .installing {
+            menu.addItem(withTitle: "Installing Update…", action: nil, keyEquivalent: "")  // no action: shown greyed out
+            menu.addItem(.separator())
+        } else if let release = updater.available {
+            add(to: menu, "Update Available: \(release.version) — Install and Restart…", #selector(installUpdate))
+            menu.addItem(.separator())
+        }
         for layout in layouts {
             add(to: menu, "\(layout.name)  (\(layout.code))", #selector(selectLayout(_:)), on: layout.id == current,
                 object: layout.id)
@@ -117,7 +139,13 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 on: overrides[layout.id] != nil, object: layout.id)
         }
         add(to: menu, "Launch at Login", #selector(toggleLaunchAtLogin), on: SMAppService.mainApp.status == .enabled)
+        add(to: menu, "Check for Updates Automatically", #selector(toggleAutoUpdate), on: updater.automaticChecks)
         menu.addItem(.separator())
+        if updater.activity == .checking {
+            menu.addItem(withTitle: "Checking for Updates…", action: nil, keyEquivalent: "")
+        } else if updater.activity == .idle {
+            add(to: menu, "Check for Updates Now", #selector(checkForUpdates))
+        }
         add(to: menu, "Setup Help…", #selector(showHelp))
         add(to: menu, "About LangCycle", #selector(showAbout))
         menu.addItem(withTitle: "Quit LangCycle", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
@@ -194,6 +222,14 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         overrides[id] = custom
         defaults.set(overrides, forKey: Key.nameOverrides)
     }
+
+    @objc private func installUpdate() {
+        if let release = updater.available { updater.askToInstall(release) }
+    }
+
+    @objc private func checkForUpdates() { updater.checkNow() }
+
+    @objc private func toggleAutoUpdate() { updater.automaticChecks.toggle() }
 
     @objc private func toggleLaunchAtLogin() {
         let service = SMAppService.mainApp
