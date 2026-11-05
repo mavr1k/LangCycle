@@ -1,4 +1,8 @@
-# LangCycle
+<p align="center">
+  <img src="Resources/AppIcon.png" width="160" alt="LangCycle app icon">
+</p>
+
+<h1 align="center">LangCycle</h1>
 
 A tiny macOS menu bar app that switches keyboard layouts the way Windows does: every press of the hotkey moves to the **next layout in a fixed order** (A → B → C → A). It then shows a **large HUD** with the language you picked, so you can see it at a glance.
 

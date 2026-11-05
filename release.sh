@@ -39,13 +39,14 @@ cask "langcycle" do
   desc "Cycle keyboard layouts in a fixed order, with a large on-screen indicator"
   homepage "https://github.com/$REPO"
 
-  depends_on macos: ">= :ventura"
+  depends_on macos: :ventura
 
   app "LangCycle.app"
 
-  postflight do
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/LangCycle.app"]
+  postflight_steps do
+    run "/usr/bin/xattr",
+        args:         ["-dr", "com.apple.quarantine", "{{appdir}}/LangCycle.app"],
+        must_succeed: false
   end
 
   zap trash: "~/Library/Preferences/com.local.langcycle.plist"
