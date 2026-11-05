@@ -11,9 +11,31 @@ A tiny macOS menu bar app that switches keyboard layouts the way Windows does: e
 ## Requirements
 
 - macOS 13 or later, on Apple Silicon or Intel (the app is a universal build).
-- Apple's Command Line Tools (`xcode-select --install`). Xcode is not needed.
+- To build from source only: Apple's Command Line Tools (`xcode-select --install`). Xcode is not needed.
 
-## Build and install
+## Install
+
+LangCycle is not notarized by Apple (that needs a paid Apple Developer account); it is only ad-hoc signed. So macOS treats a downloaded copy as coming from an unidentified developer. Both ways below deal with that.
+
+### Homebrew
+
+```sh
+brew install --cask mavr1k/tap/langcycle
+```
+
+The cask removes the download quarantine flag after installing, so macOS shows no warning.
+
+### Download
+
+1. Download `LangCycle-<version>.zip` from the [Releases page](https://github.com/mavr1k/LangCycle/releases) and unzip it.
+2. Drag `LangCycle.app` into `/Applications`.
+3. Open it. macOS refuses the first time with a message that Apple could not verify it. Click **Done**, then open **System Settings → Privacy & Security**, scroll down to **Security**, and click **Open Anyway** next to "LangCycle was blocked". Confirm with your password. You only do this once.
+
+   On macOS 13 and 14 you can instead right-click the app and choose **Open**. Or, in Terminal: `xattr -dr com.apple.quarantine /Applications/LangCycle.app`.
+
+After installing, follow [First run](#first-run-turn-off-the-macos-shortcut-required) below.
+
+### Build from source
 
 ```sh
 ./build.sh               # build a universal LangCycle.app, install it to /Applications and launch it
@@ -97,6 +119,7 @@ Resources/Info.plist                  LSUIElement agent app, bundle id com.local
    rm -rf /Applications/LangCycle.app
    defaults delete com.local.langcycle
    ```
+   If you installed with Homebrew, run `brew uninstall --cask --zap langcycle` instead. It removes the app and the saved settings.
 3. If you want macOS's own shortcut back, tick it again in System Settings → Keyboard → Keyboard Shortcuts… → Input Sources.
 
 ## About
