@@ -57,7 +57,7 @@ cask "langcycle" do
   url "https://github.com/$REPO/releases/download/v#{version}/LangCycle-#{version}.zip"
   name "LangCycle"
   desc "Cycle keyboard layouts in a fixed order, with a large on-screen indicator"
-  homepage "https://github.com/$REPO"
+  homepage "https://mavr1k.github.io/LangCycle/"
 
   depends_on macos: :ventura
 
