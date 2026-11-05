@@ -86,11 +86,11 @@ The macOS input-source switcher is unsatisfactory:
 - Secure input fields (password, secure terminal): Carbon hotkeys generally still fire; verify and document behavior.
 - Multiple displays / fullscreen app on one display: HUD appears on the display with the cursor.
 - Duplicate-named layouts (e.g. two "ABC"-like English layouts): disambiguate by input source ID.
-- Names from `kTISPropertyLocalizedName`; code abbreviations derived from `kTISPropertyInputSourceLanguages` (first language, uppercased 2 letters; Cyrillic scripts shown in native script: `УК`, `РУ`) with a small override table.
+- Names from `kTISPropertyLocalizedName`; code abbreviations derived from `kTISPropertyInputSourceLanguages` (first language, uppercased 2 letters; Cyrillic scripts shown in native script: `УК`) with a small override table.
 
 ## 8. Acceptance tests (manual)
 
-1. Enable 3 layouts (EN, UK, RU). Press ⌃Space 6 times quickly → EN→UK→RU→EN→UK→RU, never repeating the previous layout.
+1. Enable 3 layouts (EN, UK, DE). Press ⌃Space 6 times quickly → EN→UK→DE→EN→UK→DE, never repeating the previous layout.
 2. Press ⌃Space, release everything, wait 1 s, press again → advances once more (not back).
 3. ⌃⇧Space reverses the order.
 4. In a fullscreen app (e.g. Safari fullscreen) the HUD appears centered, does not exit fullscreen, and does not take focus (typing continues uninterrupted).

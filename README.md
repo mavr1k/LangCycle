@@ -9,7 +9,7 @@ A tiny macOS menu bar app that switches keyboard layouts the way Windows does: e
 - **⌃Space** selects the next layout and **⌃⇧Space** the previous one. You can choose ⌥Space or ⌘Space instead.
 - The result never depends on how fast you press or whether you let go of the modifier. Pressing, releasing and pressing again always moves forward.
 - The HUD never takes focus or blocks clicks, and it also appears over fullscreen apps and on every Space. It stays visible while you hold any key of the hotkey (⌃, ⌥ or ⌘, Space, and ⇧ for the reverse hotkey) and fades out 1 s after you let go of all of them.
-- The menu bar shows the current layout's code (`EN`, `УК`, `РУ`…), even when you switch some other way.
+- The menu bar shows the current layout's code (`EN`, `УК`, `DE`…), even when you switch some other way.
 - No dependencies, no network access, no analytics, and no permissions to grant.
 
 ## Requirements
@@ -79,7 +79,7 @@ Settings are stored in the `com.local.langcycle` defaults domain.
 
 ### Renaming HUD labels
 
-By default the HUD shows each language's own name as the headline ("English", "Українська", "Русский") and the macOS layout name ("ABC", "Ukrainian", "Russian – PC") underneath it. To use your own wording:
+By default the HUD shows each language's own name as the headline ("English", "Українська", "Deutsch") and the macOS layout name ("ABC", "Ukrainian", "German") underneath it. To use your own wording:
 
 1. Open **HUD Labels** in the menu and click a layout. A checkmark marks layouts that already have a custom label.
 2. Type the new label and press **Save**. Labels are limited to 30 characters.
