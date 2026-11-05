@@ -3,19 +3,21 @@
 # ("Bump version" commits left out), then install instructions and a changelog link.
 #
 #   ./release-notes.sh v1.1 > dist/release-notes.md
+#   ./release-notes.sh v1.2 <commit> > dist/release-notes.md    (the tag v1.2 does not exist yet)
 #
 # The release workflow runs this; the notes can still be edited on GitHub afterwards.
 set -euo pipefail
 cd "$(dirname "$0")"
 
 REPO="mavr1k/LangCycle"
-tag="${1:?usage: release-notes.sh <tag>, e.g. v1.1}"
+tag="${1:?usage: release-notes.sh <tag> [<commit>], e.g. v1.1}"
+commit="${2:-$tag}" # what the release is built from; the tag itself may not exist yet
 version="${tag#v}"
-previous="$(git describe --tags --abbrev=0 "$tag^" 2>/dev/null || true)"
+previous="$(git describe --tags --abbrev=0 "$commit^" 2>/dev/null || true)"
 
 echo "## What's new"
 echo
-git log --no-merges --pretty='- %s' "${previous:+$previous..}$tag" | grep -vE '^- Bump version' || true
+git log --no-merges --pretty='- %s' "${previous:+$previous..}$commit" | grep -vE '^- Bump version' || true
 echo
 
 sed "s/{{VERSION}}/$version/g" <<'EOF'

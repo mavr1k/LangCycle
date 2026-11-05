@@ -132,19 +132,25 @@ Resources/Info.plist                  LSUIElement agent app, bundle id com.local
 
 ## Releasing (maintainers)
 
-GitHub Actions does the work. The **CI** workflow runs the tests and a universal build on every push and pull request.
+GitHub Actions does the work. The **CI** workflow runs the tests and a universal build on every push and pull request. The **Release** workflow publishes versions.
 
-To publish a new version:
+**Every push to `main` that changes the app is released automatically.** That means a change under `Sources/`, `Resources/`, `Package.swift` or `build.sh`; docs, tests and workflow changes don't release. The workflow runs the tests, builds and checks the zip, creates the GitHub release (the notes list the commit subjects since the last release, and you can edit them afterwards) and updates the cask in [mavr1k/homebrew-tap](https://github.com/mavr1k/homebrew-tap). Everyone who installed with Homebrew gets it with `brew upgrade --cask langcycle`.
 
-1. Raise `CFBundleShortVersionString` and `CFBundleVersion` in `Resources/Info.plist`, commit and push.
-2. Tag it and push the tag: `git tag -a v1.2 -m "LangCycle 1.2" && git push origin v1.2`.
-3. The **Release** workflow then runs the tests, builds and checks the zip, creates the GitHub release (notes are the commit subjects since the last tag, which you can edit afterwards) and updates the cask in [mavr1k/homebrew-tap](https://github.com/mavr1k/homebrew-tap). It stops if the tag doesn't match the version in `Info.plist`.
+How the version is chosen (`./next-version.sh`):
 
-To try it without publishing, run **Release** by hand from the Actions tab. It builds and checks everything and keeps the files as a workflow artifact.
+- Normally the patch number of the latest tag goes up by one: `v1.1` → `1.1.1` → `1.1.2`.
+- To start a new line, raise `CFBundleShortVersionString` in `Resources/Info.plist` (for example to `1.2`) in a change to the app. That exact version is released, and patch numbers count up from it again.
+- The version is stamped into the build and is not committed back, so the workflow never pushes to `main`. The version in `Info.plist` only matters as the marker for a new line, so local builds show whatever it says.
 
-One-time setup for the cask update: create a [fine-grained token](https://github.com/settings/personal-access-tokens/new) limited to the `mavr1k/homebrew-tap` repository with **Contents: read and write**, then store it as the secret `TAP_GITHUB_TOKEN` (`gh secret set TAP_GITHUB_TOKEN -R mavr1k/LangCycle`). Without it the release is still created and the workflow only prints a notice that the cask was not updated.
+Other ways to release:
 
-`./release.sh` builds the same files locally, and `./release-notes.sh v1.2` prints the release notes.
+- **Skip a release:** put `[skip release]` in the last commit message of the push.
+- **Pick the exact version yourself:** push a tag, for example `git tag -a v2.0 -m "LangCycle 2.0" && git push origin v2.0`.
+- **Try it without publishing:** run **Release** by hand from the Actions tab. It builds and checks everything and keeps the files as a workflow artifact.
+
+One-time setup for the cask update: create a [fine-grained token](https://github.com/settings/personal-access-tokens/new) limited to the `mavr1k/homebrew-tap` repository with **Contents: read and write**, then store it as the secret `TAP_GITHUB_TOKEN` (`gh secret set TAP_GITHUB_TOKEN -R mavr1k/LangCycle`). Without it the release is still created, but the workflow only prints a notice that the cask was not updated, and Homebrew users don't get the new version. The token expires on the date you chose, so renew it before then.
+
+`./release.sh` builds the same files locally (set `LANGCYCLE_VERSION` to choose the version), and `./release-notes.sh v1.2` prints the release notes.
 
 ## About
 

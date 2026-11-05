@@ -18,7 +18,8 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 REPO="mavr1k/LangCycle"
-version="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" Resources/Info.plist)"
+# LANGCYCLE_VERSION (and LANGCYCLE_BUILD) override the Info.plist values; the release workflow sets them.
+version="${LANGCYCLE_VERSION:-$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" Resources/Info.plist)}"
 
 ./build.sh --no-install
 codesign --verify --deep --strict build/LangCycle.app

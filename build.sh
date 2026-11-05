@@ -4,6 +4,9 @@
 #   ./build.sh               build, install to /Applications and launch
 #   ./build.sh --no-install  build only (result: build/LangCycle.app)
 #
+# A release build can set the version without editing Resources/Info.plist:
+#   LANGCYCLE_VERSION=1.2.3 LANGCYCLE_BUILD=57 ./build.sh --no-install
+#
 # Needs only the Command Line Tools (xcode-select --install), not Xcode.
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -22,6 +25,13 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 lipo -create "${binaries[@]}" -output "$APP/Contents/MacOS/LangCycle"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
+# Stamp the release version into the built app only; the file in the repository is not touched.
+if [[ -n "${LANGCYCLE_VERSION:-}" ]]; then
+  /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $LANGCYCLE_VERSION" "$APP/Contents/Info.plist"
+fi
+if [[ -n "${LANGCYCLE_BUILD:-}" ]]; then
+  /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $LANGCYCLE_BUILD" "$APP/Contents/Info.plist"
+fi
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 codesign --force --sign - "$APP"
 echo "Built $APP ($(lipo -archs "$APP/Contents/MacOS/LangCycle"))"
