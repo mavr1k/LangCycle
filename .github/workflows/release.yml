@@ -1,0 +1,93 @@
+name: Release
+
+# Pushing a tag like v1.2 tests and builds the app, creates the GitHub release with the zip, and updates
+# the Homebrew cask in mavr1k/homebrew-tap. Running it by hand from the Actions tab is a dry run:
+# it builds and checks everything, keeps the files as a workflow artifact, and publishes nothing.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: macos-15
+    timeout-minutes: 30
+    permissions:
+      contents: write # to create the release
+    env:
+      # Fine-grained token with "Contents: read and write" on mavr1k/homebrew-tap only (see README, "Releasing").
+      # Without it the release is still created and the cask update is skipped with a notice.
+      TAP_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # tags and history, for the release notes
+
+      - name: Check that the tag matches the app version
+        if: github.ref_type == 'tag'
+        run: |
+          version="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" Resources/Info.plist)"
+          if [[ "$GITHUB_REF_NAME" != "v$version" ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match version $version in Resources/Info.plist. Bump the version, commit, and tag again."
+            exit 1
+          fi
+
+      - name: Unit tests
+        run: ./test.sh
+
+      - name: Build and check the release files
+        run: ./release.sh
+
+      - name: Keep the release files
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-files
+          path: |
+            dist/*.zip
+            dist/langcycle.rb
+          retention-days: 14
+
+      - name: Create the GitHub release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          ./release-notes.sh "$GITHUB_REF_NAME" > dist/release-notes.md
+          gh release create "$GITHUB_REF_NAME" "dist/LangCycle-$version.zip" \
+            --verify-tag --title "LangCycle $version" --notes-file dist/release-notes.md
+
+      # Only after the release exists, so the cask never points at a file that is not there yet.
+      - name: Check out the Homebrew tap
+        if: github.ref_type == 'tag' && env.TAP_TOKEN != ''
+        uses: actions/checkout@v4
+        with:
+          repository: mavr1k/homebrew-tap
+          token: ${{ secrets.TAP_GITHUB_TOKEN }}
+          path: tap
+
+      - name: Update the Homebrew cask
+        if: github.ref_type == 'tag' && env.TAP_TOKEN != ''
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          cp dist/langcycle.rb tap/Casks/langcycle.rb
+          cd tap
+          if git diff --quiet; then
+            echo "The cask is already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Update langcycle to $version"
+          git push
+
+      - name: Note that the cask was not updated
+        if: github.ref_type == 'tag' && env.TAP_TOKEN == ''
+        run: echo "::notice::The secret TAP_GITHUB_TOKEN is not set, so the Homebrew cask was not updated. Copy dist/langcycle.rb from the release-files artifact into the tap by hand."

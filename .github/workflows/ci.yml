@@ -1,0 +1,45 @@
+name: CI
+
+# Runs the unit tests and a universal build on every push to main and on every pull request.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-build:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Unit tests
+        run: ./test.sh
+
+      - name: Build the universal app
+        run: ./build.sh --no-install
+
+      - name: Check the app
+        run: |
+          archs="$(lipo -archs build/LangCycle.app/Contents/MacOS/LangCycle)"
+          echo "architectures: $archs"
+          [[ "$archs" == *arm64* && "$archs" == *x86_64* ]] || { echo "::error::the app is not universal"; exit 1; }
+          codesign --verify --deep --strict build/LangCycle.app
+
+      # So a pull request's build can be tried without building it locally.
+      - name: Keep the built app for a week
+        uses: actions/upload-artifact@v4
+        with:
+          name: LangCycle-${{ github.sha }}
+          path: build/LangCycle.app
+          retention-days: 7

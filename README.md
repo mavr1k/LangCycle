@@ -4,6 +4,10 @@
 
 <h1 align="center">LangCycle</h1>
 
+<p align="center">
+  <a href="https://github.com/mavr1k/LangCycle/actions/workflows/ci.yml"><img src="https://github.com/mavr1k/LangCycle/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+</p>
+
 A tiny macOS menu bar app that switches keyboard layouts the way Windows does: every press of the hotkey moves to the **next layout in a fixed order** (A → B → C → A). It then shows a **large HUD** with the language you picked, so you can see it at a glance.
 
 - **⌃Space** selects the next layout and **⌃⇧Space** the previous one. You can choose ⌥Space or ⌘Space instead.
@@ -125,6 +129,22 @@ Resources/Info.plist                  LSUIElement agent app, bundle id com.local
    ```
    If you installed with Homebrew, run `brew uninstall --cask --zap langcycle` instead. It removes the app and the saved settings.
 3. If you want macOS's own shortcut back, tick it again in System Settings → Keyboard → Keyboard Shortcuts… → Input Sources.
+
+## Releasing (maintainers)
+
+GitHub Actions does the work. The **CI** workflow runs the tests and a universal build on every push and pull request.
+
+To publish a new version:
+
+1. Raise `CFBundleShortVersionString` and `CFBundleVersion` in `Resources/Info.plist`, commit and push.
+2. Tag it and push the tag: `git tag -a v1.2 -m "LangCycle 1.2" && git push origin v1.2`.
+3. The **Release** workflow then runs the tests, builds and checks the zip, creates the GitHub release (notes are the commit subjects since the last tag, which you can edit afterwards) and updates the cask in [mavr1k/homebrew-tap](https://github.com/mavr1k/homebrew-tap). It stops if the tag doesn't match the version in `Info.plist`.
+
+To try it without publishing, run **Release** by hand from the Actions tab. It builds and checks everything and keeps the files as a workflow artifact.
+
+One-time setup for the cask update: create a [fine-grained token](https://github.com/settings/personal-access-tokens/new) limited to the `mavr1k/homebrew-tap` repository with **Contents: read and write**, then store it as the secret `TAP_GITHUB_TOKEN` (`gh secret set TAP_GITHUB_TOKEN -R mavr1k/LangCycle`). Without it the release is still created and the workflow only prints a notice that the cask was not updated.
+
+`./release.sh` builds the same files locally, and `./release-notes.sh v1.2` prints the release notes.
 
 ## About
 
