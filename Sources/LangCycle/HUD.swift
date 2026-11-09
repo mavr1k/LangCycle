@@ -16,10 +16,12 @@ private final class HUDPanel: NSPanel {
     override var canBecomeMain: Bool { false }
 }
 
-/// The large language indicator (FR-11…FR-16). One panel, reused for every switch.
+/// The large language indicator (FR-11…FR-16). The card's views are built once; the window around them is not.
+/// A window is created for each appearance and thrown away after it fades out (a quick series of presses shares one).
+/// A window kept for days goes stale: after sleep, or when Desktops are added, removed or reordered, macOS can
+/// forget to put it on some of them, and then it never shows there. A fresh window has no such history.
 final class HUD {
-    private let panel = HUDPanel(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel],
-                                 backing: .buffered, defer: false)
+    private var panel: HUDPanel?
     private let content = NSStackView()
     private let icon = NSImageView()
     private let code = NSTextField(labelWithString: "")
@@ -34,23 +36,6 @@ final class HUD {
     private var poller: Timer?
 
     init() {
-        panel.isOpaque = false
-        panel.backgroundColor = .clear
-        panel.hasShadow = true
-        panel.ignoresMouseEvents = true
-        panel.hidesOnDeactivate = false  // the app is never active
-        panel.isReleasedWhenClosed = false
-        panel.animationBehavior = .none
-        panel.level = .statusBar
-        panel.collectionBehavior = HUD.spaceBehavior
-
-        let background = NSVisualEffectView()
-        background.material = .hudWindow
-        background.blendingMode = .behindWindow
-        background.state = .active  // otherwise it renders as an inactive window
-        background.maskImage = HUD.roundedMask(radius: 24)
-        panel.contentView = background
-
         icon.imageScaling = .scaleProportionallyUpOrDown
         iconSize = [icon.widthAnchor.constraint(equalToConstant: 24), icon.heightAnchor.constraint(equalToConstant: 24)]
         NSLayoutConstraint.activate(iconSize)
@@ -66,9 +51,34 @@ final class HUD {
         [header, title, subtitle, cycle].forEach(content.addArrangedSubview)
         content.setCustomSpacing(16, after: subtitle)
         content.translatesAutoresizingMaskIntoConstraints = false
+    }
+
+    /// A new window around the card's views.
+    private func makePanel() -> HUDPanel {
+        let panel = HUDPanel(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel], backing: .buffered,
+                             defer: false)
+        panel.isOpaque = false
+        panel.backgroundColor = .clear
+        panel.hasShadow = true
+        panel.ignoresMouseEvents = true
+        panel.hidesOnDeactivate = false  // the app is never active
+        panel.isReleasedWhenClosed = false
+        panel.animationBehavior = .none
+        panel.level = .statusBar
+        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary, .ignoresCycle]
+
+        let background = NSVisualEffectView()
+        background.material = .hudWindow
+        background.blendingMode = .behindWindow
+        background.state = .active  // otherwise it renders as an inactive window
+        background.maskImage = HUD.roundedMask(radius: 24)
+        panel.contentView = background
+
+        content.removeFromSuperview()
         background.addSubview(content)
         NSLayoutConstraint.activate([content.centerXAnchor.constraint(equalTo: background.centerXAnchor),
                                      content.centerYAnchor.constraint(equalTo: background.centerYAnchor)])
+        return panel
     }
 
     /// Shows `active` (with the whole cycle underneath). The HUD stays while `isHeld()` is true, i.e. while the user
@@ -83,6 +93,8 @@ final class HUD {
         }
         configure(active, in: layouts, size: size)
 
+        let panel = visiblePanel ?? makePanel()
+        self.panel = panel
         let width = max(size.minimumSize.width, fit.width + 64), height = max(size.minimumSize.height, fit.height + 48)
         let mouse = NSEvent.mouseLocation
         let frame = (NSScreen.screens.first { NSMouseInRect(mouse, $0.frame, false) } ?? NSScreen.main)?.frame ?? .zero
@@ -92,7 +104,7 @@ final class HUD {
 
         generation += 1
         NSAnimationContext.runAnimationGroup { $0.duration = 0; panel.animator().alphaValue = 1 }  // cancels a fade
-        bringToActiveSpace()
+        panel.orderFrontRegardless()  // never makeKey / activate
 
         self.isHeld = isHeld
         tracker.reset()
@@ -104,24 +116,11 @@ final class HUD {
         }
     }
 
-    /// Puts the panel on the Desktop (Space) that is showing now. A reused window with `.canJoinAllSpaces` is sometimes
-    /// left off a Space the system did not attach it to, and then a plain `orderFront` shows nothing there. So the
-    /// window is checked, and if it is not on this Space it is taken off screen and ordered in again, which makes
-    /// the window server place it afresh. Never makeKey / activate.
-    private func bringToActiveSpace() {
-        if panel.isVisible && !panel.isOnActiveSpace { panel.orderOut(nil) }
-        panel.collectionBehavior = HUD.spaceBehavior
-        panel.orderFrontRegardless()
-        // isOnActiveSpace is only reliable once the window server has handled the order-in, so look again shortly after.
-        let shown = generation
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
-            guard let self, self.generation == shown, self.panel.isVisible, !self.panel.isOnActiveSpace else { return }
-            self.panel.orderOut(nil)
-            self.panel.orderFrontRegardless()
-        }
+    /// The window of a HUD that is still on screen (a series of quick presses), if any.
+    private var visiblePanel: HUDPanel? {
+        guard let panel, panel.isVisible else { return nil }
+        return panel
     }
-
-    private static let spaceBehavior: NSWindow.CollectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary, .ignoresCycle]
 
     private func poll() {
         guard tracker.update(held: isHeld(), now: ProcessInfo.processInfo.systemUptime) else { return }
@@ -147,10 +146,13 @@ final class HUD {
     }
 
     private func fadeOut(_ shown: Int) {
+        guard let panel else { return }
         NSAnimationContext.runAnimationGroup({ $0.duration = 0.2; panel.animator().alphaValue = 0 },
                                              completionHandler: { [weak self] in
             guard let self, self.generation == shown else { return }  // a newer switch is showing
-            self.panel.orderOut(nil)
+            panel.orderOut(nil)
+            self.content.removeFromSuperview()
+            self.panel = nil  // the next switch gets a new window
         })
     }
 
