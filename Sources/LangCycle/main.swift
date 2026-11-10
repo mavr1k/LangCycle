@@ -8,6 +8,7 @@ private enum Key {
     static let preset = "hotkeyPreset", hudSize = "hudSize", showHUD = "showHUD"
     static let skipped = "skippedIDs", didShowHelp = "didShowHelp"
     static let nameOverrides = "nameOverrides"  // [layout ID: custom HUD headline]
+    static let order = "layoutOrder"            // [layout ID] in the user's cycle order (FR-28)
 }
 
 final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
@@ -19,11 +20,20 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var layoutCode = "⌨︎"
     private var lastSelected: String?
     private var lastSelectedTime: TimeInterval?
+    private var orderRows: LayoutOrderRows?  // buttons only hold their target weakly
 
     private var preset: HotkeyPreset { HotkeyPreset(rawValue: defaults.integer(forKey: Key.preset)) ?? .control }
     private var hudSize: HUDSize { HUDSize(rawValue: defaults.integer(forKey: Key.hudSize)) ?? .medium }
     private var skipped: Set<String> { Set(defaults.stringArray(forKey: Key.skipped) ?? []) }
     private var nameOverrides: [String: String] { defaults.dictionary(forKey: Key.nameOverrides) as? [String: String] ?? [:] }
+
+    private var savedOrder: [String] { defaults.stringArray(forKey: Key.order) ?? [] }
+
+    /// Puts layouts in the user's cycle order; layouts without a saved place follow in system order (FR-28).
+    private func ordered(_ layouts: [Layout]) -> [Layout] {
+        let byID = Dictionary(layouts.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        return applyOrder(to: layouts.map(\.id), saved: savedOrder).compactMap { byID[$0] }
+    }
 
     /// Applies the user's HUD label overrides, keyed by input source ID.
     private func labeled(_ layouts: [Layout]) -> [Layout] {
@@ -64,7 +74,7 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
     // MARK: Switching
 
     private func cycle(forward: Bool) {
-        let enabled = labeled(InputSources.enabled())  // re-read on every press: added/removed layouts apply at once
+        let enabled = ordered(labeled(InputSources.enabled()))  // re-read on every press: added/removed layouts apply at once
         let cycleLayouts = enabled.filter { !skipped.contains($0.id) }
         let layouts = cycleLayouts.isEmpty ? enabled : cycleLayouts
         let current = InputSources.currentID()
@@ -101,7 +111,7 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
-        let layouts = InputSources.enabled()
+        let layouts = ordered(InputSources.enabled())
         let current = InputSources.currentID()
         if updater.activity == .installing {
             menu.addItem(withTitle: "Installing Update…", action: nil, keyEquivalent: "")  // no action: shown greyed out
@@ -128,6 +138,13 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
             add(to: sizes, size.title, #selector(setHUDSize(_:)), on: size == hudSize, tag: size.rawValue)
         }
         add(to: menu, "Show HUD", #selector(toggleHUD), on: defaults.bool(forKey: Key.showHUD))
+        // ▲ ▼ rows that keep the menu open while the user reorders (FR-28).
+        let order = submenu(of: menu, "Layout Order")
+        let rows = LayoutOrderRows(layouts: layouts) { [weak self] ids in self?.saveOrder(ids) }
+        orderRows = rows
+        rows.menuItems().forEach(order.addItem)
+        order.addItem(.separator())
+        add(to: order, "Reset to System Order", #selector(resetOrder))
         let skip = submenu(of: menu, "Skip Layouts")
         for layout in layouts {
             add(to: skip, layout.name, #selector(toggleSkip(_:)), on: skipped.contains(layout.id), object: layout.id)
@@ -184,6 +201,13 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc private func setHUDSize(_ item: NSMenuItem) { defaults.set(item.tag, forKey: Key.hudSize) }
 
     @objc private func toggleHUD() { defaults.set(!defaults.bool(forKey: Key.showHUD), forKey: Key.showHUD) }
+
+    /// Stores a new order of the enabled layouts. Layouts that are disabled right now keep their slots in the list.
+    private func saveOrder(_ ids: [String]) {
+        defaults.set(mergeOrder(visible: ids, into: savedOrder), forKey: Key.order)
+    }
+
+    @objc private func resetOrder() { defaults.removeObject(forKey: Key.order) }
 
     @objc private func toggleSkip(_ item: NSMenuItem) {
         guard let id = item.representedObject as? String else { return }

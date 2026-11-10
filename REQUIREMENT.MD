@@ -36,7 +36,7 @@ The macOS input-source switcher is unsatisfactory:
 
 ### 5.1 Switching
 - **FR-1** Default hotkey **⌃Space** → select next layout. **⌃⇧Space** → select previous layout.
-- **FR-2** The layout list is the set of **enabled, selectable keyboard layouts/input sources** from `TISCreateInputSourceList` (filter: `kTISPropertyInputSourceIsSelectCapable == true` and category `kTISCategoryKeyboardInputSource`). Order follows the order returned by the system (same as System Settings → Keyboard → Input Sources). The list is re-read on every press so adding/removing layouts is picked up immediately; also listen for `kTISNotifyEnabledKeyboardInputSourcesChanged`.
+- **FR-2** The layout list is the set of **enabled, selectable keyboard layouts/input sources** from `TISCreateInputSourceList` (filter: `kTISPropertyInputSourceIsSelectCapable == true` and category `kTISCategoryKeyboardInputSource`). Order follows the order returned by the system (same as System Settings → Keyboard → Input Sources), unless the user has set their own order (FR-28). The list is re-read on every press so adding/removing layouts is picked up immediately; also listen for `kTISNotifyEnabledKeyboardInputSourcesChanged`.
 - **FR-3** Switching uses `TISSelectInputSource`.
 - **FR-4 (core)** Next layout is computed from the **last layout this app selected**, if that was within the last ~800 ms. Otherwise it is computed from the **currently active** layout (`TISCopyCurrentKeyboardInputSource`). This avoids races where the system hasn't yet reported the new layout during fast repeated presses, and still handles layout changes made by other means (menu, mouse, another shortcut).
   - Acceptance: from layout A, pressing the hotkey 3 times quickly yields B, C, A. Pressing, waiting 2 s, pressing again yields B, C. Never goes "back" on a forward press.
@@ -67,6 +67,7 @@ The macOS input-source switcher is unsatisfactory:
 - **FR-18** Status item shows the current layout's short code (`EN`, `УК`, `DE`…), updated on `kTISNotifySelectedKeyboardInputSourceChanged` (so it stays correct when switched by any means).
 - **FR-19** Menu: list of enabled layouts (click to select, checkmark on current); Hotkey; HUD size; Show HUD (toggle); Launch at login (toggle, via `SMAppService.mainApp`); Setup help…; Quit.
 - **FR-20** Optional: "Skip layouts…" submenu to exclude layouts from the cycle while keeping them enabled.
+- **FR-28** "Layout Order" submenu: the user sets the cycle order. Each layout has ▲ ▼ buttons that move it one place up or down (the first wraps to the end, the last to the start). The buttons are views inside the menu items, so the menu stays open while the user reorders. "Reset to System Order" clears the custom order. The order is stored as a list of input source IDs (`layoutOrder`). It applies to the hotkey cycle, the menu layout list and the HUD's layout row. Layouts without a stored place (newly enabled) go at the end in system order. IDs of layouts that are currently disabled stay in the stored list, so re-enabling one puts it back in its old place.
 
 ### 5.5 Lifecycle
 - **FR-21** Single instance (second launch quits immediately).

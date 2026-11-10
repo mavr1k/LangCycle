@@ -77,6 +77,7 @@ LangCycle shows these steps on first launch, and later under **Setup Help…** i
 | Hotkey | Choose ⌃Space, ⌥Space or ⌘Space. Adding ⇧ always goes backwards. |
 | HUD Size | Small, Medium or Large. |
 | Show HUD | Turn the HUD off to keep only the menu bar code. |
+| Layout Order | Set the cycle order. Each layout has ▲ ▼ buttons to move it up or down; the menu stays open. Reset to System Order undoes it. |
 | Skip Layouts | Leave layouts out of the cycle while keeping them enabled in macOS. |
 | HUD Labels | Rename the big name the HUD shows for a layout (see below). |
 | Launch at Login | Uses `SMAppService`. macOS may ask you to approve it in System Settings → General → Login Items. |
@@ -100,7 +101,7 @@ Labels are saved per layout (by its macOS input source ID), so they survive rest
 
 ## How the next layout is chosen
 
-The layout list comes from macOS: the enabled keyboard layouts, in the order shown in System Settings → Keyboard → Input Sources. It is read again on every press, so adding or removing a layout takes effect immediately.
+The layout list comes from macOS: the enabled keyboard layouts, in the order shown in System Settings → Keyboard → Input Sources, unless you set your own with **Layout Order**. It is read again on every press, so adding or removing a layout takes effect immediately.
 
 Right after LangCycle selects a layout, macOS can still report the old one for a short time. So a press within **0.8 s** of LangCycle's last switch continues from the layout LangCycle just picked. Any later press continues from the layout that is actually active, including one you picked with the mouse or another shortcut.
 
